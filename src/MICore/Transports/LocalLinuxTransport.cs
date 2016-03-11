@@ -159,7 +159,7 @@ namespace MICore
             {
                 foreach (EnvironmentEntry entry in localOptions.Environment)
                 {
-                    terminalProcess.StartInfo.Environment.Add(entry.Name, entry.Value);
+                    terminalProcess.StartInfo.EnvironmentVariables.Add(entry.Name, entry.Value);
                 }
             }
 

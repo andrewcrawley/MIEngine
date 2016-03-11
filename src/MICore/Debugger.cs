@@ -504,7 +504,7 @@ namespace MICore
         public Task CmdBreakInternal()
         {
             //TODO May need to fix attach on windows and osx.
-            if (IsLocalGdbAttach() && RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            if (IsLocalGdbAttach() /*&& RuntimeInformation.IsOSPlatform(OSPlatform.Linux)*/)
             {
                 // for local linux debugging with attach, send a signal to one of the debugee processes rather than
                 // using -exec-interrupt. -exec-interrupt does not work with attach. End result is either

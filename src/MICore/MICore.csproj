@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <Import Project="..\..\build\miengine.settings.targets" />
+  <!--<Import Project="..\..\build\miengine.settings.targets" />-->
   <PropertyGroup>
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Configuration Condition=" '$(Configuration)' == '' ">Lab.Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{54C33AFA-438D-4932-A2F0-D0F2BB2FADC9}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -16,9 +16,9 @@
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
-    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
-    <OutputPath>$(MIDefaultOutputPath)</OutputPath>
-    <DocumentationFile>$(DropRootDir)\ReferenceAssemblies\$(AssemblyName).xml</DocumentationFile>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <OutputPath>../../bin</OutputPath>
+    <!--<DocumentationFile>$(DropRootDir)\ReferenceAssemblies\$(AssemblyName).xml</DocumentationFile>-->
     <!-- Disable warning about public API without XML documentation: it would be nice if MICore had documentation 
     for all its methods, but it is also not a public assembly, and adding XML documentation for all its methods
     would take a fair amount of work.-->
@@ -129,15 +129,20 @@
     <GlassDirCopy Include="$(OutDir)$(AssemblyName).XmlSerializers.dll" Condition="'$(Configuration)'!='Debug-PortablePDB'" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DebugEngineHost.Stub\DebugEngineHost.Stub.csproj">
+    <!--<ProjectReference Include="..\DebugEngineHost.Stub\DebugEngineHost.Stub.csproj">
       <Project>{ea876a2d-ab0f-4204-97dd-dfb3b5568978}</Project>
       <Name>DebugEngineHost.Stub</Name>
       <Private>False</Private>
-    </ProjectReference>
+    </ProjectReference>-->
+    <Reference Include="System.Xml" />
+    <Reference Include="../../../OpenDebugAD7/bin/Microsoft.DebugEngineHost.dll" />
+    <Reference Include="System" />
+    <Reference Include="../../../OpenDebugAD7/src/packages/Microsoft.VisualStudio.Debugger.Interop.Portable/1.0.1/lib/portable-net45+net46+dnxcore50/Microsoft.VisualStudio.Debugger.InteropA.dll" />
   </ItemGroup>
   <ItemGroup />
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <Import Project="..\..\build\miengine.targets" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!--<Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <Import Project="..\..\build\miengine.targets" />-->
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="AfterBuild">
@@ -164,19 +169,19 @@
   the CLR will try and load the assembly directly from the output directory.-->
   <Target Name="GenerateXmlSerializersAssembly" AfterTargets="Compile" Inputs="LaunchOptions.xsd.types.desginer.cs;$(AssemblyOriginatorKeyFile)" Condition="'$(Configuration)'!='Debug-PortablePDB'" Outputs="$(IntermediateOutputPath)sgen\$(AssemblyName).XmlSerializers.dll">
     <PropertyGroup>
-      <SereializationSigningCompilerOptions>/keyfile:$(AssemblyOriginatorKeyFile)</SereializationSigningCompilerOptions>
+      <!--<SereializationSigningCompilerOptions>/keyfile:$(AssemblyOriginatorKeyFile)</SereializationSigningCompilerOptions>-->
       <SereializationSigningCompilerOptions Condition="'$(DelaySign)'=='true'">$(SereializationSigningCompilerOptions) /delaysign</SereializationSigningCompilerOptions>
     </PropertyGroup>
-    <Error Condition="'$(SDK40ToolsPath)'==''" Text="SDK40ToolsPath msbuild property is undefined." />
+    <!--<Error Condition="'$(SDK40ToolsPath)'==''" Text="SDK40ToolsPath msbuild property is undefined." />-->
     <Error Condition="'$(MSBuildBinPath)'==''" Text="MSBuildBinPath msbuild property is undefined" />
-    <Error Condition="!Exists('$(SDK40ToolsPath)sgen.exe')" Text="sgen.exe does not exist in the SDK40ToolsPath ($(SDK40ToolsPath)xsd.exe)." />
-    <Error Condition="!Exists('$(MSBuildBinPath)\csc.exe')" Text="csc.exe does not exist in MSBuildBinPath ($(MSBuildBinPath))" />
+    <Error Condition="!Exists('$(MSBuildBinPath)\sgen.exe')" Text="sgen.exe does not exist in the MSBuildBinPath ($(MSBuildBinPath)\sgen.exe)." />
+    <Error Condition="!Exists('$(MSBuildBinPath)\mcs.exe')" Text="mcs.exe does not exist in MSBuildBinPath ($(MSBuildBinPath))" />
     <RemoveDir Condition="Exists('$(IntermediateOutputPath)sgen')" Directories="$(IntermediateOutputPath)sgen" />
     <MakeDir Directories="$(IntermediateOutputPath)sgen" />
     <!--Compile the types file into an assembly that we can use as input to sgen. We don't want to pass our real assembly as we have some things that sgen doesn't like.-->
-    <Exec Command="&quot;$(MSBuildBinPath)\csc.exe&quot; LaunchOptions.xsd.types.desginer.cs $(GeneratedAssemblyInfoFile) /out:$(IntermediateOutputPath)sgen\$(AssemblyName).dll /target:library /noconfig $(SereializationSigningCompilerOptions) /r:$(MSBuildFrameworkToolsPath)\System.dll /r:$(MSBuildFrameworkToolsPath)\System.XML.dll" />
+    <Exec Command="&quot;$(MSBuildBinPath)\mcs.exe&quot; LaunchOptions.xsd.types.desginer.cs $(GeneratedAssemblyInfoFile) /out:$(IntermediateOutputPath)sgen\$(AssemblyName).dll /target:library /noconfig $(SereializationSigningCompilerOptions) /r:$(MSBuildBinPath)\System.dll /r:$(MSBuildBinPath)\System.Xml.dll" />
     <!--Now generate the serialization assembly-->
-    <Exec Command="&quot;$(SDK40ToolsPath)sgen.exe&quot; $(IntermediateOutputPath)sgen\$(AssemblyName).dll /force /compiler:&quot;$(SereializationSigningCompilerOptions)&quot; /keep" />
+    <Exec Command="&quot;$(MSBuildBinPath)\sgen.exe&quot; $(IntermediateOutputPath)sgen\$(AssemblyName).dll /force /compiler:&quot;$(SereializationSigningCompilerOptions)&quot; /keep" />
   </Target>
   <!--To get the seralization assembly copied to the vsix, and also to the output directory, we have this target
   which adds the XmlSerializers as if it was a source item in our project with a 'CopyToOutputDirectory' child

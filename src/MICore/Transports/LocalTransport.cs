@@ -29,14 +29,14 @@ namespace MICore
             proc.StartInfo.WorkingDirectory = miDebuggerDir;
 
             //GDB locally requires that the directory be on the PATH, being the working directory isn't good enough
-            if (proc.StartInfo.Environment.ContainsKey("PATH"))
+            if (proc.StartInfo.EnvironmentVariables.ContainsKey("PATH"))
             {
-                proc.StartInfo.Environment["PATH"] = proc.StartInfo.Environment["PATH"] + ";" + miDebuggerDir;
+                proc.StartInfo.EnvironmentVariables["PATH"] = proc.StartInfo.EnvironmentVariables["PATH"] + ";" + miDebuggerDir;
             }
 
             foreach (EnvironmentEntry entry in localOptions.Environment)
             {
-                proc.StartInfo.Environment.Add(entry.Name, entry.Value);
+                proc.StartInfo.EnvironmentVariables.Add(entry.Name, entry.Value);
             }
 
             InitProcess(proc, out reader, out writer);
