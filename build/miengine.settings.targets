@@ -34,6 +34,7 @@
     </When>
     <Otherwise>
       <PropertyGroup>
+        <DefineConstants>$(DefineConstants);CORECLR</DefineConstants>
         <IsCoreClr>true</IsCoreClr>
         <IsMonoRuntime>false</IsMonoRuntime>
       </PropertyGroup>
