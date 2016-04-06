@@ -8,7 +8,7 @@
   <Import Project="version.settings.targets" />
 
   <Choose>
-    <When Condition="'$(Configuration)' == 'Lab.Debug' Or '$(Configuration)' == 'Lab.Release'">
+    <When Condition="$(Configuration.Contains('Lab.'))">
         <PropertyGroup>
             <!--NOTE:DevDivPublicKey.snk comes from src\\tools\\devdiv\\FinalPublicKey.snk -->
             <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)..\Keys\DevDivPublicKey.snk</AssemblyOriginatorKeyFile>
@@ -20,6 +20,23 @@
             <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)..\Keys\ExternalKey.snk</AssemblyOriginatorKeyFile>
             <DelaySign>false</DelaySign>
         </PropertyGroup>
+    </Otherwise>
+  </Choose>
+  
+  <Choose>
+    <When Condition="$(Configuration.Contains('.Desktop'))">
+      <PropertyGroup>
+        <IsCoreClr>false</IsCoreClr>
+        <NugetPackagesDirectory>$(NugetPackagesDirectory).Desktop</NugetPackagesDirectory>
+        <!-- Skip resolution from project.json -->
+        <!--<ResolveNuGetPackages>false</ResolveNuGetPackages>-->
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <IsCoreClr>true</IsCoreClr>
+        <IsMonoRuntime>false</IsMonoRuntime>
+      </PropertyGroup>
     </Otherwise>
   </Choose>
   
