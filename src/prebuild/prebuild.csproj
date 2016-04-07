@@ -13,10 +13,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Lab.Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Lab.Release|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug-PortablePDB|AnyCPU'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug.Desktop|AnyCPU'">
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release.Desktop|AnyCPU'">
-  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug.Desktop|AnyCPU'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release.Desktop|AnyCPU'" />
   <ItemGroup>
     <GenerateAssembly Include="$(ILDir)*.il">
       <Visible>false</Visible>
@@ -69,6 +67,7 @@
   <Target Name="SatelliteDllsProjectOutputGroup" />
   <Target Name="DebugSymbolsProjectOutputGroup" />
   <Target Name="GetPackagingOutputs" />
+  <Target Name="GetTargetPath" />
   <!-- Older versions of NuGet don't respect the ProjectReference.ReferenceOutputAssembly attribute and will attempt to parse this
        project anyway, so include a fake target to keep it happy -->
   <Target Name="_NuGet_GetProjectsReferencingProjectJsonInternal" />
