@@ -29,7 +29,7 @@
         <IsCoreClr>false</IsCoreClr>
         <NugetPackagesDirectory>$(NugetPackagesDirectory).Desktop</NugetPackagesDirectory>
         <!-- Skip resolution from project.json -->
-        <!--<ResolveNuGetPackages>false</ResolveNuGetPackages>-->
+        <ResolveNuGetPackages>false</ResolveNuGetPackages>
       </PropertyGroup>
     </When>
     <Otherwise>
