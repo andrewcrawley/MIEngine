@@ -31,6 +31,34 @@ namespace MICore
             return _runtimePlatform;
         }
 
+#if !CORECLR
+        [DllImport("libc")]
+        static extern int uname(IntPtr buf);
+
+        private static RuntimePlatform GetUnixVariant()
+        {
+            IntPtr buf = Marshal.AllocHGlobal(8192);
+            try
+            {
+                if (uname(buf) == 0)
+                {
+                    string os = Marshal.PtrToStringAnsi(buf);
+                    switch (os)
+                    {
+                        case "Darwin":
+                            return RuntimePlatform.MacOSX;
+                    }
+                }
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(buf);
+            }
+
+            return RuntimePlatform.Unix;
+        }
+#endif
+
         private static RuntimePlatform CalculateRuntimePlatform()
         {
 #if CORECLR
@@ -53,7 +81,8 @@ namespace MICore
                 case PlatformID.Win32NT:
                     return RuntimePlatform.Windows;
                 case PlatformID.Unix:
-                    return RuntimePlatform.Unix;
+                    // Mono returns PlatformID.Unix on OSX
+                    return PlatformUtilities.GetUnixVariant();
                 case PlatformID.MacOSX:
                 case ((PlatformID)128):
                     return RuntimePlatform.MacOSX;
