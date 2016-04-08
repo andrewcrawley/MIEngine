@@ -1,0 +1,34 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- This target is used to generate an XML serializers assembly for the types in LaunchOptions.xsd. We can't embed these types
+  into MICore as CoreCLR doesn't expose the types needed to make that code work.
+  NOTE: We don't do this in the Debug-PortablePDB configuration as having this file messes up unix, and when we use 'InstallToVSCode link'
+  the CLR will try and load the assembly directly from the output directory. -->
+  <Target Name="GenerateXmlSerializersAssembly"
+          AfterTargets="Compile"
+          Condition="'$(Configuration)'!='Debug-PortablePDB'"
+          Inputs="$(XsdCodeFile);$(AssemblyOriginatorKeyFile)"
+          Outputs="$(IntermediateOutputPath)sgen/$(AssemblyName).XmlSerializers.dll">
+    <PropertyGroup>
+      <SerializationSigningCompilerOptions>/keyfile:$(AssemblyOriginatorKeyFile)</SerializationSigningCompilerOptions>
+      <SerializationSigningCompilerOptions Condition="'$(DelaySign)'=='true'">$(SerializationSigningCompilerOptions) /delaysign</SerializationSigningCompilerOptions>
+
+      <CompilerPath>$(CscToolPath)$(CscToolExe)</CompilerPath>
+      <CompilerPath Condition="'$(CompilerPath)' == ''">$(MSBuildBinPath)\csc.exe</CompilerPath>
+
+      <RefPath Condition="'$(IsMonoRuntime)' == 'false'">$(MSBuildFrameworkToolsPath)</RefPath>
+      <RefPath Condition="'$(IsMonoRuntime)' == 'true'">$(SDK40ToolsPath)</RefPath>
+    </PropertyGroup>
+
+    <Error Condition="'$(SDK40ToolsPath)'==''" Text="SDK40ToolsPath msbuild property is undefined." />
+    <Error Condition="!Exists('$(SDK40ToolsPath)sgen.exe')" Text="sgen.exe does not exist in the SDK40ToolsPath ($(SDK40ToolsPath)xsd.exe)." />
+
+    <RemoveDir Condition="Exists('$(IntermediateOutputPath)sgen')" Directories="$(IntermediateOutputPath)sgen" />
+    <MakeDir Directories="$(IntermediateOutputPath)sgen" />
+
+    <!-- Compile the types file into an assembly that we can use as input to sgen. We don't want to pass our real assembly as we have some things that sgen doesn't like. -->
+    <Exec Command="&quot;$(CompilerPath)&quot; $(XsdCodeFile) $(GeneratedAssemblyInfoFile) /out:$(IntermediateOutputPath)sgen/$(AssemblyName).dll /target:library /noconfig $(SerializationSigningCompilerOptions) /r:$(RefPath)/System.dll /r:$(RefPath)/System.Xml.dll" />
+
+    <!-- Now generate the serialization assembly -->
+    <Exec Command="&quot;$(SDK40ToolsPath)sgen.exe&quot; $(IntermediateOutputPath)sgen/$(AssemblyName).dll /force /compiler:&quot;$(SerializationSigningCompilerOptions)&quot; /keep" />
+  </Target>
+</Project>
